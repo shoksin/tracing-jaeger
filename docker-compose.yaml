@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  jaeger: 
+    image: jaegertracing/all-in-one
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"     # UI
+      - "4317:4317"       # OTLP gRPC
+      - "4318:4318"       # OTLP HTTP
+
+  redis:
+    restart: on-failure
+    image: "redis:latest"
+    command: redis-server --port 6379
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_REPLICATION_MODE: master
+    volumes:
+      - redis-data:/var/lib/redis
+
+volumes:
+  redis-data:
