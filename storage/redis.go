@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-redis/redis"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"github.com/shoksin/tracing-jaeger/models"
 )
 
@@ -22,11 +22,11 @@ func NewNoteStorage(client redis.UniversalClient) NotesStorage {
 func (s NotesStorage) Store(ctx context.Context, note models.Note) error {
 	data, err := json.Marshal(note)
 	if err != nil {
-		log.Println("storage(Store) Marhal:", err)
+		log.Println("storage(Store) Marshal:", err)
 		return fmt.Errorf("marshal note: %w", err)
 	}
 
-	if err = s.client.Set(note.NoteID.String(), data, -1).Err(); err != nil {
+	if err = s.client.Set(ctx, note.NoteID.String(), data, -1).Err(); err != nil {
 		return fmt.Errorf("redis set: %w", err)
 	}
 
@@ -34,7 +34,7 @@ func (s NotesStorage) Store(ctx context.Context, note models.Note) error {
 }
 
 func (s NotesStorage) Get(ctx context.Context, noteID uuid.UUID) (*models.Note, error) {
-	data, err := s.client.Get(noteID.String()).Bytes()
+	data, err := s.client.Get(ctx, noteID.String()).Bytes()
 	if err != nil {
 		if err == redis.Nil {
 			return nil, models.ErrNotFound
@@ -43,7 +43,6 @@ func (s NotesStorage) Get(ctx context.Context, noteID uuid.UUID) (*models.Note, 
 	}
 
 	var note models.Note
-
 	if err := json.Unmarshal(data, &note); err != nil {
 		return nil, fmt.Errorf("unmarshal note: %w", err)
 	}

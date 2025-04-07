@@ -1,22 +1,26 @@
 package main
 
 import (
+	"context"
 	"log"
 
-	"github.com/shoksin/tracing-jaeger/trace"
-
-	"github.com/go-redis/redis"
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/extra/redisotel/v9"
+	"github.com/redis/go-redis/v9"
+
 	"github.com/shoksin/tracing-jaeger/server"
 	"github.com/shoksin/tracing-jaeger/storage"
+	"github.com/shoksin/tracing-jaeger/trace"
 )
 
 func main() {
+	ctx := context.Background()
+
 	app := fiber.New()
 	app.Use(otelfiber.Middleware())
 
-	_, err := trace.InitTracer("localhost:4318", "Note Service")
+	tracer, err := trace.InitTracer("localhost:4318", "Note Service")
 	if err != nil {
 		log.Fatal("init tracer: ", err)
 	}
@@ -25,11 +29,15 @@ func main() {
 		Addr: "localhost:6379",
 	})
 
-	if err := client.Ping().Err(); err != nil {
+	if err := client.Ping(ctx).Err(); err != nil {
 		log.Fatal("create redis client: ", err)
 	}
 
-	handler := server.NewFiberHandler(storage.NewNoteStorage(client))
+	if err := redisotel.InstrumentTracing(client); err != nil {
+		log.Fatal("enable instrument tracing: ", err)
+	}
+
+	handler := server.NewFiberHandler(storage.NewNoteStorage(client), tracer)
 
 	app.Post("/create", handler.CreateNote)
 	app.Get("/get", handler.GetNote)
