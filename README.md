@@ -7,5 +7,9 @@
 ### jaeger UI:
 ``` http://localhost:16686 ```
 
-### jaeger backend:
-``` http://localhost:4318 ```
+## Использованные технологии:
+1. OpenTelemetry
+2. Jaeger
+3. Docker
+4. Redis
+5. Fiber
