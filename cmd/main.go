@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/shoksin/tracing-jaeger/ internal/server"
+	"github.com/shoksin/tracing-jaeger/ internal/storage"
+	"github.com/shoksin/tracing-jaeger/ internal/trace"
 	"log"
 
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
-
-	"github.com/shoksin/tracing-jaeger/server"
-	"github.com/shoksin/tracing-jaeger/storage"
-	"github.com/shoksin/tracing-jaeger/trace"
 )
 
 func main() {

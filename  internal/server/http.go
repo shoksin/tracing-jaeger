@@ -2,12 +2,12 @@ package server
 
 import (
 	"errors"
+	"github.com/shoksin/tracing-jaeger/ internal/models"
+	"github.com/shoksin/tracing-jaeger/ internal/storage"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/shoksin/tracing-jaeger/models"
-	"github.com/shoksin/tracing-jaeger/storage"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	oteltrace "go.opentelemetry.io/otel/trace"

@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/shoksin/tracing-jaeger/ internal/models"
 	"log"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
-	"github.com/shoksin/tracing-jaeger/models"
 )
 
 type NotesStorage struct {
